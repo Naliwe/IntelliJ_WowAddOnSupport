@@ -11,6 +11,7 @@ import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.roots.ModifiableRootModel
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.JarFileSystem
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
@@ -49,16 +50,13 @@ class AddOnModuleBuilder : ModuleBuilder(), ModuleBuilderListener {
 
         File(path).mkdirs()
         val sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(path)!!
-
+        val jarUtil = JarFileSystem.getInstance()
         val desc = PluginManager.getPlugin(PluginId.getId("org.squarecell.wow.addon_support"))!!
 
         val pluginPath = desc.path.absolutePath
         val realPath = VfsUtil.pathToUrl(pluginPath)
         val pluginVD = VirtualFileManager.getInstance().findFileByUrl(realPath)!!
-        val libPath = pluginVD.findChild("lib")!!
-                .findChild("WorldOfWarcraft_AddOn_Support.jar")!!
-        val jarUtil = JarFileSystem.getInstance()
-        val file = jarUtil.refreshAndFindFileByPath(libPath.path + "!/Wow_sdk")!!
+        val file = jarUtil.refreshAndFindFileByPath(pluginVD.path + "!/Wow_sdk")!!
 
 //        val classesDir = pluginVD.findChild("classes")?: pluginVD
 //        val deps = classesDir.findChild("Wow_sdk")!!
