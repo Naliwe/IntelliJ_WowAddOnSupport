@@ -43,6 +43,9 @@ class AddOnModuleBuilder : ModuleBuilder(), ModuleBuilderListener {
 
         file.createNewFile()
         file.writeText(MainFile.initAce3AddOn)
+        file.writeText(MainFile.defaultInitFunc)
+        file.writeText(MainFile.defaultLoadFunc)
+        file.writeText(MainFile.defaultUnloadFunc)
     }
 
     override fun setupRootModel(modifiableRootModel: ModifiableRootModel) {
