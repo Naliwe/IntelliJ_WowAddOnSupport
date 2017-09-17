@@ -30,48 +30,48 @@ local type, unpack, next, error, select = type, unpack, next, error, select
 local GetTime, C_TimerAfter = GetTime, C_Timer.After
 
 local function new(self, loop, func, delay, ...)
-	if delay < 0.01 then
-		delay = 0.01 -- Restrict to the lowest time that the C_Timer API allows us
-	end
+    if delay < 0.01 then
+        delay = 0.01 -- Restrict to the lowest time that the C_Timer API allows us
+    end
 
-	local timer = {...}
-	timer.object = self
-	timer.func = func
-	timer.looping = loop
-	timer.argsCount = select("#", ...)
-	timer.delay = delay
-	timer.ends = GetTime() + delay
+    local timer = { ... }
+    timer.object = self
+    timer.func = func
+    timer.looping = loop
+    timer.argsCount = select("#", ...)
+    timer.delay = delay
+    timer.ends = GetTime() + delay
 
-	activeTimers[timer] = timer
+    activeTimers[timer] = timer
 
-	-- Create new timer closure to wrap the "timer" object
-	timer.callback = function() 
-		if not timer.cancelled then
-			if type(timer.func) == "string" then
-				-- We manually set the unpack count to prevent issues with an arg set that contains nil and ends with nil
-				-- e.g. local t = {1, 2, nil, 3, nil} print(#t) will result in 2, instead of 5. This fixes said issue.
-				timer.object[timer.func](timer.object, unpack(timer, 1, timer.argsCount))
-			else
-				timer.func(unpack(timer, 1, timer.argsCount))
-			end
+    -- Create new timer closure to wrap the "timer" object
+    timer.callback = function()
+        if not timer.cancelled then
+            if type(timer.func) == "string" then
+                -- We manually set the unpack count to prevent issues with an arg set that contains nil and ends with nil
+                -- e.g. local t = {1, 2, nil, 3, nil} print(#t) will result in 2, instead of 5. This fixes said issue.
+                timer.object[timer.func](timer.object, unpack(timer, 1, timer.argsCount))
+            else
+                timer.func(unpack(timer, 1, timer.argsCount))
+            end
 
-			if timer.looping and not timer.cancelled then
-				-- Compensate delay to get a perfect average delay, even if individual times don't match up perfectly
-				-- due to fps differences
-				local time = GetTime()
-				local delay = timer.delay - (time - timer.ends)
-				-- Ensure the delay doesn't go below the threshold
-				if delay < 0.01 then delay = 0.01 end
-				C_TimerAfter(delay, timer.callback)
-				timer.ends = time + delay
-			else
-				activeTimers[timer.handle or timer] = nil
-			end
-		end
-	end
+            if timer.looping and not timer.cancelled then
+                -- Compensate delay to get a perfect average delay, even if individual times don't match up perfectly
+                -- due to fps differences
+                local time = GetTime()
+                local delay = timer.delay - (time - timer.ends)
+                -- Ensure the delay doesn't go below the threshold
+                if delay < 0.01 then delay = 0.01 end
+                C_TimerAfter(delay, timer.callback)
+                timer.ends = time + delay
+            else
+                activeTimers[timer.handle or timer] = nil
+            end
+        end
+    end
 
-	C_TimerAfter(delay, timer.callback)
-	return timer
+    C_TimerAfter(delay, timer.callback)
+    return timer
 end
 
 --- Schedule a new one-shot timer.
@@ -83,24 +83,24 @@ end
 -- MyAddOn = LibStub("AceAddon-3.0"):NewAddon("MyAddOn", "AceTimer-3.0")
 --
 -- function MyAddOn:OnEnable()
---   self:ScheduleTimer("TimerFeedback", 5)
+-- self:ScheduleTimer("TimerFeedback", 5)
 -- end
 --
 -- function MyAddOn:TimerFeedback()
---   print("5 seconds passed")
+-- print("5 seconds passed")
 -- end
 function AceTimer:ScheduleTimer(func, delay, ...)
-	if not func or not delay then
-		error(MAJOR..": ScheduleTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
-	end
-	if type(func) == "string" then
-		if type(self) ~= "table" then
-			error(MAJOR..": ScheduleTimer(callback, delay, args...): 'self' - must be a table.", 2)
-		elseif not self[func] then
-			error(MAJOR..": ScheduleTimer(callback, delay, args...): Tried to register '"..func.."' as the callback, but it doesn't exist in the module.", 2)
-		end
-	end
-	return new(self, nil, func, delay, ...)
+    if not func or not delay then
+        error(MAJOR .. ": ScheduleTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
+    end
+    if type(func) == "string" then
+        if type(self) ~= "table" then
+            error(MAJOR .. ": ScheduleTimer(callback, delay, args...): 'self' - must be a table.", 2)
+        elseif not self[func] then
+            error(MAJOR .. ": ScheduleTimer(callback, delay, args...): Tried to register '" .. func .. "' as the callback, but it doesn't exist in the module.", 2)
+        end
+    end
+    return new(self, nil, func, delay, ...)
 end
 
 --- Schedule a repeating timer.
@@ -112,30 +112,30 @@ end
 -- MyAddOn = LibStub("AceAddon-3.0"):NewAddon("MyAddOn", "AceTimer-3.0")
 --
 -- function MyAddOn:OnEnable()
---   self.timerCount = 0
---   self.testTimer = self:ScheduleRepeatingTimer("TimerFeedback", 5)
+-- self.timerCount = 0
+-- self.testTimer = self:ScheduleRepeatingTimer("TimerFeedback", 5)
 -- end
 --
 -- function MyAddOn:TimerFeedback()
---   self.timerCount = self.timerCount + 1
---   print(("%d seconds passed"):format(5 * self.timerCount))
---   -- run 30 seconds in total
---   if self.timerCount == 6 then
---     self:CancelTimer(self.testTimer)
---   end
+-- self.timerCount = self.timerCount + 1
+-- print(("%d seconds passed"):format(5 * self.timerCount))
+-- -- run 30 seconds in total
+-- if self.timerCount == 6 then
+-- self:CancelTimer(self.testTimer)
+-- end
 -- end
 function AceTimer:ScheduleRepeatingTimer(func, delay, ...)
-	if not func or not delay then
-		error(MAJOR..": ScheduleRepeatingTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
-	end
-	if type(func) == "string" then
-		if type(self) ~= "table" then
-			error(MAJOR..": ScheduleRepeatingTimer(callback, delay, args...): 'self' - must be a table.", 2)
-		elseif not self[func] then
-			error(MAJOR..": ScheduleRepeatingTimer(callback, delay, args...): Tried to register '"..func.."' as the callback, but it doesn't exist in the module.", 2)
-		end
-	end
-	return new(self, true, func, delay, ...)
+    if not func or not delay then
+        error(MAJOR .. ": ScheduleRepeatingTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
+    end
+    if type(func) == "string" then
+        if type(self) ~= "table" then
+            error(MAJOR .. ": ScheduleRepeatingTimer(callback, delay, args...): 'self' - must be a table.", 2)
+        elseif not self[func] then
+            error(MAJOR .. ": ScheduleRepeatingTimer(callback, delay, args...): Tried to register '" .. func .. "' as the callback, but it doesn't exist in the module.", 2)
+        end
+    end
+    return new(self, true, func, delay, ...)
 end
 
 --- Cancels a timer with the given id, registered by the same addon object as used for `:ScheduleTimer`
@@ -143,24 +143,24 @@ end
 -- and the timer has not fired yet or was canceled before.
 -- @param id The id of the timer, as returned by `:ScheduleTimer` or `:ScheduleRepeatingTimer`
 function AceTimer:CancelTimer(id)
-	local timer = activeTimers[id]
+    local timer = activeTimers[id]
 
-	if not timer then
-		return false
-	else
-		timer.cancelled = true
-		activeTimers[id] = nil
-		return true
-	end
+    if not timer then
+        return false
+    else
+        timer.cancelled = true
+        activeTimers[id] = nil
+        return true
+    end
 end
 
 --- Cancels all timers registered to the current addon object ('self')
 function AceTimer:CancelAllTimers()
-	for k,v in pairs(activeTimers) do
-		if v.object == self then
-			AceTimer.CancelTimer(self, k)
-		end
-	end
+    for k, v in pairs(activeTimers) do
+        if v.object == self then
+            AceTimer.CancelTimer(self, k)
+        end
+    end
 end
 
 --- Returns the time left for a timer with the given id, registered by the current addon object ('self').
@@ -168,12 +168,12 @@ end
 -- @param id The id of the timer, as returned by `:ScheduleTimer` or `:ScheduleRepeatingTimer`
 -- @return The time left on the timer.
 function AceTimer:TimeLeft(id)
-	local timer = activeTimers[id]
-	if not timer then
-		return 0
-	else
-		return timer.ends - GetTime()
-	end
+    local timer = activeTimers[id]
+    if not timer then
+        return 0
+    else
+        return timer.ends - GetTime()
+    end
 end
 
 
@@ -182,66 +182,66 @@ end
 
 -- Upgrade from old hash-bucket based timers to C_Timer.After timers.
 if oldminor and oldminor < 10 then
-	-- disable old timer logic
-	AceTimer.frame:SetScript("OnUpdate", nil)
-	AceTimer.frame:SetScript("OnEvent", nil)
-	AceTimer.frame:UnregisterAllEvents()
-	-- convert timers
-	for object,timers in pairs(AceTimer.selfs) do
-		for handle,timer in pairs(timers) do
-			if type(timer) == "table" and timer.callback then
-				local newTimer
-				if timer.delay then
-					newTimer = AceTimer.ScheduleRepeatingTimer(timer.object, timer.callback, timer.delay, timer.arg)
-				else
-					newTimer = AceTimer.ScheduleTimer(timer.object, timer.callback, timer.when - GetTime(), timer.arg)
-				end
-				-- Use the old handle for old timers
-				activeTimers[newTimer] = nil
-				activeTimers[handle] = newTimer
-				newTimer.handle = handle
-			end
-		end
-	end
-	AceTimer.selfs = nil
-	AceTimer.hash = nil
-	AceTimer.debug = nil
+    -- disable old timer logic
+    AceTimer.frame:SetScript("OnUpdate", nil)
+    AceTimer.frame:SetScript("OnEvent", nil)
+    AceTimer.frame:UnregisterAllEvents()
+    -- convert timers
+    for object, timers in pairs(AceTimer.selfs) do
+        for handle, timer in pairs(timers) do
+            if type(timer) == "table" and timer.callback then
+                local newTimer
+                if timer.delay then
+                    newTimer = AceTimer.ScheduleRepeatingTimer(timer.object, timer.callback, timer.delay, timer.arg)
+                else
+                    newTimer = AceTimer.ScheduleTimer(timer.object, timer.callback, timer.when - GetTime(), timer.arg)
+                end
+                -- Use the old handle for old timers
+                activeTimers[newTimer] = nil
+                activeTimers[handle] = newTimer
+                newTimer.handle = handle
+            end
+        end
+    end
+    AceTimer.selfs = nil
+    AceTimer.hash = nil
+    AceTimer.debug = nil
 elseif oldminor and oldminor < 17 then
-	-- Upgrade from old animation based timers to C_Timer.After timers.
-	AceTimer.inactiveTimers = nil
-	AceTimer.frame = nil
-	local oldTimers = AceTimer.activeTimers
-	-- Clear old timer table and update upvalue
-	AceTimer.activeTimers = {}
-	activeTimers = AceTimer.activeTimers
-	for handle, timer in pairs(oldTimers) do
-		local newTimer
-		-- Stop the old timer animation
-		local duration, elapsed = timer:GetDuration(), timer:GetElapsed()
-		timer:GetParent():Stop()
-		if timer.looping then
-			newTimer = AceTimer.ScheduleRepeatingTimer(timer.object, timer.func, duration, unpack(timer.args, 1, timer.argsCount))
-		else
-			newTimer = AceTimer.ScheduleTimer(timer.object, timer.func, duration - elapsed, unpack(timer.args, 1, timer.argsCount))
-		end
-		-- Use the old handle for old timers
-		activeTimers[newTimer] = nil
-		activeTimers[handle] = newTimer
-		newTimer.handle = handle
-	end
+    -- Upgrade from old animation based timers to C_Timer.After timers.
+    AceTimer.inactiveTimers = nil
+    AceTimer.frame = nil
+    local oldTimers = AceTimer.activeTimers
+    -- Clear old timer table and update upvalue
+    AceTimer.activeTimers = {}
+    activeTimers = AceTimer.activeTimers
+    for handle, timer in pairs(oldTimers) do
+        local newTimer
+        -- Stop the old timer animation
+        local duration, elapsed = timer:GetDuration(), timer:GetElapsed()
+        timer:GetParent():Stop()
+        if timer.looping then
+            newTimer = AceTimer.ScheduleRepeatingTimer(timer.object, timer.func, duration, unpack(timer.args, 1, timer.argsCount))
+        else
+            newTimer = AceTimer.ScheduleTimer(timer.object, timer.func, duration - elapsed, unpack(timer.args, 1, timer.argsCount))
+        end
+        -- Use the old handle for old timers
+        activeTimers[newTimer] = nil
+        activeTimers[handle] = newTimer
+        newTimer.handle = handle
+    end
 
-	-- Migrate transitional handles
-	if oldminor < 13 and AceTimer.hashCompatTable then
-		for handle, id in pairs(AceTimer.hashCompatTable) do
-			local t = activeTimers[id]
-			if t then
-				activeTimers[id] = nil
-				activeTimers[handle] = t
-				t.handle = handle
-			end
-		end
-		AceTimer.hashCompatTable = nil
-	end
+    -- Migrate transitional handles
+    if oldminor < 13 and AceTimer.hashCompatTable then
+        for handle, id in pairs(AceTimer.hashCompatTable) do
+            local t = activeTimers[id]
+            if t then
+                activeTimers[id] = nil
+                activeTimers[handle] = t
+                t.handle = handle
+            end
+        end
+        AceTimer.hashCompatTable = nil
+    end
 end
 
 -- ---------------------------------------------------------------------
@@ -250,17 +250,17 @@ end
 AceTimer.embeds = AceTimer.embeds or {}
 
 local mixins = {
-	"ScheduleTimer", "ScheduleRepeatingTimer",
-	"CancelTimer", "CancelAllTimers",
-	"TimeLeft"
+    "ScheduleTimer", "ScheduleRepeatingTimer",
+    "CancelTimer", "CancelAllTimers",
+    "TimeLeft"
 }
 
 function AceTimer:Embed(target)
-	AceTimer.embeds[target] = true
-	for _,v in pairs(mixins) do
-		target[v] = AceTimer[v]
-	end
-	return target
+    AceTimer.embeds[target] = true
+    for _, v in pairs(mixins) do
+        target[v] = AceTimer[v]
+    end
+    return target
 end
 
 -- AceTimer:OnEmbedDisable(target)
@@ -268,9 +268,9 @@ end
 --
 -- cancel all timers registered for the object
 function AceTimer:OnEmbedDisable(target)
-	target:CancelAllTimers()
+    target:CancelAllTimers()
 end
 
 for addon in pairs(AceTimer.embeds) do
-	AceTimer:Embed(addon)
+    AceTimer:Embed(addon)
 end

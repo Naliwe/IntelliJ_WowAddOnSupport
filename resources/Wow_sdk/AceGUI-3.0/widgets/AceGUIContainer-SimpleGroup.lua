@@ -17,53 +17,51 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 Methods
 -------------------------------------------------------------------------------]]
 local methods = {
-	["OnAcquire"] = function(self)
-		self:SetWidth(300)
-		self:SetHeight(100)
-	end,
+    ["OnAcquire"] = function(self)
+        self:SetWidth(300)
+        self:SetHeight(100)
+    end,
 
-	-- ["OnRelease"] = nil,
+    -- ["OnRelease"] = nil,
 
-	["LayoutFinished"] = function(self, width, height)
-		if self.noAutoHeight then return end
-		self:SetHeight(height or 0)
-	end,
-
-	["OnWidthSet"] = function(self, width)
-		local content = self.content
-		content:SetWidth(width)
-		content.width = width
-	end,
-
-	["OnHeightSet"] = function(self, height)
-		local content = self.content
-		content:SetHeight(height)
-		content.height = height
-	end
+    ["LayoutFinished"] = function(self, width, height)
+        if self.noAutoHeight then return end
+        self:SetHeight(height or 0)
+    end,
+    ["OnWidthSet"] = function(self, width)
+        local content = self.content
+        content:SetWidth(width)
+        content.width = width
+    end,
+    ["OnHeightSet"] = function(self, height)
+        local content = self.content
+        content:SetHeight(height)
+        content.height = height
+    end
 }
 
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
 local function Constructor()
-	local frame = CreateFrame("Frame", nil, UIParent)
-	frame:SetFrameStrata("FULLSCREEN_DIALOG")
+    local frame = CreateFrame("Frame", nil, UIParent)
+    frame:SetFrameStrata("FULLSCREEN_DIALOG")
 
-	--Container Support
-	local content = CreateFrame("Frame", nil, frame)
-	content:SetPoint("TOPLEFT")
-	content:SetPoint("BOTTOMRIGHT")
+    --Container Support
+    local content = CreateFrame("Frame", nil, frame)
+    content:SetPoint("TOPLEFT")
+    content:SetPoint("BOTTOMRIGHT")
 
-	local widget = {
-		frame     = frame,
-		content   = content,
-		type      = Type
-	}
-	for method, func in pairs(methods) do
-		widget[method] = func
-	end
+    local widget = {
+        frame = frame,
+        content = content,
+        type = Type
+    }
+    for method, func in pairs(methods) do
+        widget[method] = func
+    end
 
-	return AceGUI:RegisterAsContainer(widget)
+    return AceGUI:RegisterAsContainer(widget)
 end
 
 AceGUI:RegisterWidgetType(Type, Constructor, Version)

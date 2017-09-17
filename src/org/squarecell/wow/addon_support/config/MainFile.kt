@@ -6,17 +6,17 @@ object MainFile {
     val initAce3AddOn = "MyAddon = LibStub(\"AceAddon-3.0\"):NewAddon" +
                         "(\"${PropertiesComponent.getInstance().getValue(
                                 ProjectSettingsKeys.AddOnTitle)}\", " +
-                        "\"AceConsole-3.0\")\n"
+                        "\"AceConsole-3.0\")\n\n"
 
     val defaultInitFunc = "function MyAddon:OnInitialize()\n" +
-                           "  -- Code that you want to run when the addon is first loaded goes here.\n" +
-                           "end" +"\n"
+                          "  -- Code that you want to run when the addon is first loaded goes here.\n" +
+                          "end" + "\n\n"
 
     val defaultLoadFunc = "function MyAddon:OnEnable()\n" +
                           "    -- Called when the addon is enabled\n" +
-                          "end" + "\n"
+                          "end" + "\n\n"
 
     val defaultUnloadFunc = "function MyAddon:OnDisable()\n" +
                             "    -- Called when the addon is disabled\n" +
-                            "end" + "\n"
+                            "end" + "\n\n"
 }

@@ -1,6 +1,5 @@
 package org.squarecell.wow.addon_support.builders
 
-import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.plugins.PluginManager
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.ide.util.projectWizard.ModuleBuilder
@@ -8,17 +7,14 @@ import com.intellij.ide.util.projectWizard.ModuleBuilderListener
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
 import com.intellij.ide.util.projectWizard.WizardContext
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.roots.ModifiableRootModel
-import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.JarFileSystem
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.util.messages.MessageBus
 import org.squarecell.wow.addon_support.config.MainFile
 import org.squarecell.wow.addon_support.config.ProjectSettingsKeys
 import org.squarecell.wow.addon_support.modules.AddOnModuleType
@@ -42,10 +38,10 @@ class AddOnModuleBuilder : ModuleBuilder(), ModuleBuilderListener {
         val file = File(mainFilePath)
 
         file.createNewFile()
-        file.writeText(MainFile.initAce3AddOn)
-        file.writeText(MainFile.defaultInitFunc)
-        file.writeText(MainFile.defaultLoadFunc)
-        file.writeText(MainFile.defaultUnloadFunc)
+        file.appendText(MainFile.initAce3AddOn)
+        file.appendText(MainFile.defaultInitFunc)
+        file.appendText(MainFile.defaultLoadFunc)
+        file.appendText(MainFile.defaultUnloadFunc)
     }
 
     override fun setupRootModel(modifiableRootModel: ModifiableRootModel) {

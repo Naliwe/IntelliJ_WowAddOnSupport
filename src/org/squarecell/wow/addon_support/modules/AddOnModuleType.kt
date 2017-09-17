@@ -7,8 +7,7 @@ import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.module.ModuleTypeManager
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
 import org.squarecell.wow.addon_support.builders.AddOnModuleBuilder
-
-import javax.swing.*
+import javax.swing.Icon
 
 class AddOnModuleType : ModuleType<AddOnModuleBuilder>(ID) {
     override fun createModuleBuilder(): AddOnModuleBuilder {

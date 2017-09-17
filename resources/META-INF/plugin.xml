@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>org.squarecell.wow.addon_support</id>
     <name>World of Warcraft Addon Support</name>
-    <version>0.1</version>
+    <version>0.2</version>
     <vendor email="r.fourdrilis@gmail.com">SquareCell</vendor>
 
     <description><![CDATA[
@@ -11,6 +11,7 @@
     <change-notes><![CDATA[
   <ul>
     <li> <em>0.1:</em> Creation</li>
+    <li> <em>0.2:</em> Added Ace3 default funcs</li>
   </ul>
     ]]>
     </change-notes>
