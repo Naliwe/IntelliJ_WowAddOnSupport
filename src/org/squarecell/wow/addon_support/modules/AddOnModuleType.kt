@@ -15,7 +15,7 @@ class AddOnModuleType : ModuleType<AddOnModuleBuilder>(ID) {
     }
 
     override fun getName(): String {
-        return "Woww AddOn"
+        return "Wow AddOn"
     }
 
     override fun getDescription(): String {
