@@ -1,0 +1,38 @@
+<idea-plugin>
+    <id>org.squarecell.wow.addon_support</id>
+    <name>World of Warcraft Addon Support</name>
+    <version>0.1</version>
+    <vendor email="r.fourdrilis@gmail.com">SquareCell</vendor>
+
+    <description><![CDATA[
+  Adds World of Warcraft Addon Project creation
+    ]]></description>
+
+    <change-notes><![CDATA[
+  <ul>
+    <li> <em>0.1:</em> Creation</li>
+  </ul>
+    ]]>
+    </change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="145.0"/>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <moduleType id="WowAddonModuleType"
+                    implementationClass="org.squarecell.wow.addon_support.modules.AddOnModuleType"/>
+        <moduleBuilder builderClass="org.squarecell.wow.addon_support.builders.AddOnModuleBuilder"/>
+    </extensions>
+
+    <actions>
+    </actions>
+
+    <module-components>
+    </module-components>
+</idea-plugin>

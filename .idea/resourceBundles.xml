@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ResourceBundleManager">
+    <file url="file://$PROJECT_DIR$/resources/org.squarecell.wow.addon_support.resources.strings.properties" />
+    <file url="file://$PROJECT_DIR$/resources/org.squarecell.wow.addon_support.resources.strings_en_US.properties" />
+    <file url="file://$PROJECT_DIR$/resources/org.squarecell.wow.addon_support.resources.strings_fr_FR.properties" />
+    <custom-resource-bundle>
+      <file value="file://$PROJECT_DIR$/resources/org.squarecell.wow.addon_support.resources.strings.properties" />
+      <file value="file://$PROJECT_DIR$/resources/org.squarecell.wow.addon_support.resources.strings_en_US.properties" />
+      <file value="file://$PROJECT_DIR$/resources/org.squarecell.wow.addon_support.resources.strings_fr_FR.properties" />
+      <base-name>org.squarecell.wow.addon_support.resources.strings</base-name>
+    </custom-resource-bundle>
+  </component>
+</project>
